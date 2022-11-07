@@ -19,7 +19,6 @@ class Solver {
     int pre(string operStr) {
         
         char oper = operStr[0];
-        cout << "In pre, oper is " << oper << endl;
         switch (oper) {
             case '+':
                 return 1;
@@ -83,7 +82,6 @@ public:
         string token;
         string::size_type i = 0;
         while (i < expr.length()) {
-            
 
             while (isspace(expr[i])) { cout << "expr [i] is space " << endl; i++; }
 
@@ -113,8 +111,9 @@ public:
 
     void printTokens(void) {
         for (auto i: tokens) {
-            cout << i << "   " << endl;
+            cout << i << "  ";
         }
+        cout << endl;
     }
    
     void qprint() {
@@ -122,7 +121,7 @@ public:
         queue<string> copyQueue = oqu;
 
         while (!copyQueue.empty()) {
-            cout << "    " << copyQueue.front();
+            cout << copyQueue.front() << "  ";
             copyQueue.pop();
         }
         cout << endl;
@@ -130,47 +129,35 @@ public:
 
    void shuntingYard(void) {
         for (auto token: tokens) {
-            cout << "Current token " << token << " and size " << token.size() << endl;
-        
             if (isdigit(token[0])) {
                 oqu.push(token);
             } else if (opers.rfind(token) != string::npos) {
 
-                cout << "In elseif" << endl;
-
                 // Seg fault 11 occuring in while loop
-                if (!ost.empty()) {
-                    while ((ost.top() != "(") && ((pre(ost.top()) > pre(token)) || ((pre(ost.top()) == pre(token)) && (opers.rfind(token) != string::npos)))) {
-
-                        cout << "In long while loop" << endl;
-                        string temp = ost.top();
-                        oqu.push(temp);
-                        ost.pop();
-                    } 
-                }
+                while (!ost.empty() && ((ost.top() != "(") && ((pre(ost.top()) > pre(token)) || ((pre(ost.top()) == pre(token)) && (opers.rfind(token) != string::npos))))) {
+                    string temp = ost.top();
+                    oqu.push(temp);
+                    ost.pop();
+                } 
                 ost.push(token);
             } else if (token == "(") {
                 ost.push(token);
             } else if (token == ")") {
-
                 while (ost.top() != "(") {
                     assert(!ost.empty());
                     string temp = ost.top();
                     oqu.push(temp);
+                    ost.pop();
                 }
-                 
-                assert(ost.top() == ")");
+                assert(ost.top() == "(");
                 ost.pop();
-                
                 // for function implementation i'd add another if else statment
             } else {
                 cout << "Something went wrong around line: " << __LINE__ << endl;
                 exit(-1);
             }
         }
-
         while (!ost.empty()) {
-
             assert(ost.top() != "(");
             string temp = ost.top();
             oqu.push(temp);
@@ -187,11 +174,17 @@ int main(void) {
 
     Solver ob(input);
     ob.parseTokens(); 
+
+    cout << endl;
+    cout << "Here are the tokens once parsed" << endl;
+    ob.printTokens();
+
+    cout << endl;
+    cout << "Applying shuntingYard()" << endl;
     ob.shuntingYard();
 
     cout << endl;
     cout << "Shunting yard has been applied, new expression is below" << endl;
-    cout << endl;
     ob.qprint();
 
     cout << endl;
