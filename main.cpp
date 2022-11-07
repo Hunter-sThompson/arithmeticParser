@@ -19,6 +19,7 @@ class Solver {
     int pre(string operStr) {
         
         char oper = operStr[0];
+        cout << "In pre, oper is " << oper << endl;
         switch (oper) {
             case '+':
                 return 1;
@@ -133,20 +134,20 @@ public:
         
             if (isdigit(token[0])) {
                 oqu.push(token);
-
             } else if (opers.rfind(token) != string::npos) {
 
+                cout << "In elseif" << endl;
 
                 // Seg fault 11 occuring in while loop
+                if (!ost.empty()) {
+                    while ((ost.top() != "(") && ((pre(ost.top()) > pre(token)) || ((pre(ost.top()) == pre(token)) && (opers.rfind(token) != string::npos)))) {
 
-                /* while ((ost.top() != "(") && ((pre(ost.top()) > pre(token)) || ((pre(ost.top()) == pre(token)) && (opers.rfind(token) != string::npos)))) {
-
-                    cout << "In long while loop" << endl;
-                    string temp = ost.top();
-                    oqu.push(temp);
-                    ost.pop();
-                } */ 
-
+                        cout << "In long while loop" << endl;
+                        string temp = ost.top();
+                        oqu.push(temp);
+                        ost.pop();
+                    } 
+                }
                 ost.push(token);
             } else if (token == "(") {
                 ost.push(token);
@@ -163,7 +164,8 @@ public:
                 
                 // for function implementation i'd add another if else statment
             } else {
-                throw invalid_argument("Invalid Operator");
+                cout << "Something went wrong around line: " << __LINE__ << endl;
+                exit(-1);
             }
         }
 
@@ -174,7 +176,6 @@ public:
             oqu.push(temp);
             ost.pop();
         }
-
     }
 };
 
